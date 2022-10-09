@@ -27,7 +27,17 @@ export function SignIn() {
 
     auth().signInWithEmailAndPassword(email, password)
     .catch((error) => {
+      console.log(error)
       setIsLoading(false)
+
+      if( error.code === 'auth/invalid-email')
+        return Alert.alert('Sig in', 'Invalid Email or password')
+
+      if( error.code === 'auth/wrong-password')
+        return Alert.alert('Sig in', 'Invalid Email or password')
+      
+      if( error.code === 'auth/user-not-found')
+        return Alert.alert('Sig in', 'User not found it')
     })
 
   }
