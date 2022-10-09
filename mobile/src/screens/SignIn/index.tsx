@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { VStack, Heading, Icon, useTheme } from 'native-base';
+import auth from '@react-native-firebase/auth'
 import { Input } from '../../components/Input';
 
 import { Envelope, Key } from 'phosphor-react-native';
@@ -10,6 +11,7 @@ import { Button } from '../../components/Button';
 import { Alert } from 'react-native';
 
 export function SignIn() {
+  const [ isLoading, setIsLoading ] = useState(false)
   const [ email, setEmail ] = useState('')
   const [ password , setPassword ] = useState('')
 
@@ -20,6 +22,14 @@ export function SignIn() {
     if (!email || !password) {
       return Alert.alert('Danger', 'fill it up email and password')
     }
+
+    setIsLoading(true);
+
+    auth().signInWithEmailAndPassword(email, password)
+    .catch((error) => {
+      setIsLoading(false)
+    })
+
   }
 
   return (
@@ -46,7 +56,12 @@ export function SignIn() {
       onChangeText={setPassword}
       />
 
-      <Button title='Log In' w="full" onPress={handleSignIn}/>
+      <Button 
+      title='Log In' 
+      w="full" 
+      onPress={handleSignIn}
+      isLoading={isLoading}
+      />
 
     </VStack>
   );

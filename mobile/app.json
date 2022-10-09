@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "mobile4",
-    "slug": "mobile4",
+    "name": "mobile",
+    "slug": "mobile",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -20,16 +20,17 @@
     "plugins": [
       "@react-native-firebase/app"
     ],
-
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "googleServicesFile": "./GoogleService-info.plist"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#121214"
-      }
-      
+      },
+      "googleServicesFile": "./google-services.json",
+      "package": "com.diamondApp"
     }
   }
 }

@@ -12,7 +12,7 @@ export function Locations() {
   const [location, setLocation] = useState<LocationProps | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-// const test = ok
+
   useEffect(() => {
     (async () => {
       if (Platform.OS === 'android' && !Device.isDevice) {

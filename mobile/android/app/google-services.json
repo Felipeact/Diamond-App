@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "635107220608",
+    "project_id": "diamondapp-942d6",
+    "storage_bucket": "diamondapp-942d6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:635107220608:android:b885a5f756e047c96ada65",
+        "android_client_info": {
+          "package_name": "com.diamondApp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "635107220608-mr1om7op74htra4b48da3rm138klifjj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCuaHv5i142xgqIEVRK57FsCCyfVDHUFsw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "635107220608-mr1om7op74htra4b48da3rm138klifjj.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "635107220608-tviuga8bhdl6fm60hcbr5n2cn3c13a5d.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.diamondApp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
