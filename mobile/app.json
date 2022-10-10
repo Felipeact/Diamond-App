@@ -22,7 +22,8 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "googleServicesFile": "./GoogleService-info.plist"
+      "googleServicesFile": "./GoogleService-info.plist",
+      "bundleIdentifier": "com.diamondApp"
     },
     "android": {
       "adaptiveIcon": {
