@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
+import { Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native'
 import { HStack, IconButton, VStack, useTheme, Text, Heading, FlatList, Center } from 'native-base';
+import auth from '@react-native-firebase/auth'
 import { Platform } from 'react-native';
 import Device from 'expo-device';
 import * as Location from 'expo-location';
@@ -46,6 +48,15 @@ export function Home() {
 
   function handleNewOrder(){
     navigation.navigate('location')
+  }
+
+  function handleLogin() {
+    auth()
+    .signOut()
+    .catch( error => {
+      console.log(error);
+      return Alert.alert
+    })
   }
 
   return (

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { VStack, Heading, Icon, useTheme } from 'native-base';
+import * as Location from 'expo-location'
 import auth from '@react-native-firebase/auth'
 import { Input } from '../../components/Input';
 
@@ -17,7 +18,7 @@ export function SignIn() {
 
   const { colors } = useTheme()
 
-  function handleSignIn() {
+  async function handleSignIn() {
     
     if (!email || !password) {
       return Alert.alert('Danger', 'fill it up email and password')
@@ -38,9 +39,26 @@ export function SignIn() {
       
       if( error.code === 'auth/user-not-found')
         return Alert.alert('Sig in', 'User not found it')
+
+      return Alert.alert('Danger', 'System is down try again later')
     })
 
-  }
+    let { status } = await Location.requestForegroundPermissionsAsync();
+    if (status === 'granted') {
+      const { status } = await Location.getBackgroundPermissionsAsync();
+      if (status !== 'granted') {
+        return Alert.alert('Permission to access location was denied');
+      }
+    } else {
+      return alert('Need Permission to access')
+    }
+
+
+    
+     
+
+
+  }  
 
   return (
     <VStack flex={1} alignItems='center' bg="gray.500" px={8} pt={24}>
