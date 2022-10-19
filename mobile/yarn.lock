@@ -2138,10 +2138,10 @@
     prompts "^2.4.0"
     semver "^6.3.0"
 
-"@react-native-firebase/app@~15.4.0":
-  version "15.4.0"
-  resolved "https://registry.npmjs.org/@react-native-firebase/app/-/app-15.4.0.tgz"
-  integrity sha512-1Xf1Q0x6x6dZamRjIpDLCvj4CUwozr1mvH3sc3A4J1avjGUwgqD0RR58DGd7r9akU+JmEXLHB84EZ9Aa68AHDg==
+"@react-native-firebase/app@^15.7.0":
+  version "15.7.0"
+  resolved "https://registry.npmjs.org/@react-native-firebase/app/-/app-15.7.0.tgz"
+  integrity sha512-ZyrvewIkQC0UHDuHxXyc25/V8xYOa4xlukIHIbtJeBzVCCyVgZxF4Svyqs+CosqbHOuwWnmg+AW0rMvjrRcdmw==
   dependencies:
     "@expo/config-plugins" "^5.0.1"
     opencollective-postinstall "^2.0.1"
@@ -2149,12 +2149,12 @@
 
 "@react-native-firebase/auth@^15.7.0":
   version "15.7.0"
-  resolved "https://registry.yarnpkg.com/@react-native-firebase/auth/-/auth-15.7.0.tgz#bc133cb6e0f33fd307e8d3dfa7ae04b5980d7fbb"
+  resolved "https://registry.npmjs.org/@react-native-firebase/auth/-/auth-15.7.0.tgz"
   integrity sha512-0HJfCc0SUcSFbz5SyZWZOJkhtn+kOU8ytuPHM+vOJBeg5owJzmLnFx1ZI20gHU5cxhN3UQy/GKMPvlIcDeW7Bg==
 
 "@react-native-firebase/firestore@^15.7.0":
   version "15.7.0"
-  resolved "https://registry.yarnpkg.com/@react-native-firebase/firestore/-/firestore-15.7.0.tgz#9396d3cfcdf54aec3c10bb5c45d08d292a990abb"
+  resolved "https://registry.npmjs.org/@react-native-firebase/firestore/-/firestore-15.7.0.tgz"
   integrity sha512-lcMApKFIo4k9GqOUuK03WBDs3JP0pa94jTmy+hZQLAqyeA78GYC57CzGGKCkR0qtwCzMtE8HXqICY9FKv4rxpg==
 
 "@react-native/assets@1.0.0":

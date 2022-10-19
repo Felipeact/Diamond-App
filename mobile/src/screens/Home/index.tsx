@@ -2,62 +2,127 @@ import React, { useEffect, useState } from 'react';
 import { Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native'
 import { HStack, IconButton, VStack, useTheme, Text, Heading, FlatList, Center } from 'native-base';
-import auth from '@react-native-firebase/auth'
-import { Platform } from 'react-native';
-import Device from 'expo-device';
+import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth'
+import firestore from '@react-native-firebase/firestore';
 import * as Location from 'expo-location';
+
 
 import Logo from "../../assets/logo_secondary.svg";
 import { SignOut } from 'phosphor-react-native';
 import { Filter } from '../../components/Filter';
-import { MyLocation, LocationProps  } from '../../components/MyLocation';
+import { MyLocation, LocationProps } from '../../components/MyLocation';
 import { Button } from '../../components/Button';
+import { dateFormat } from '../../utils/firestoreDateFormat';
+import { Loading } from '../../components/Loading';
 
 export function Home() {
-  const [ statusSelected, setStatusSelected ] = useState<'open' | 'closed'>('open')
-  const [isMylocation, setIsMyLocation] = useState<LocationProps | null>(null);
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
-
-  useEffect(() => {
-    (async () => {
-      if (Platform.OS === 'android' && !Device.isDevice) {
-        setErrorMsg('Oops, this will not work on Snack in an Android Emulator. Try it on your device!');
-        return;
-      }
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        setErrorMsg('Permission to access location was denied');
-        return;
-      }
-
-      const { coords } = await Location.getCurrentPositionAsync({});
-      const { latitude, longitude } = coords;
-      setIsMyLocation({
-        id: '1',
-        latitude, 
-        longitude,
-        when: '18/07/2022',
-         status: 'open'
-      });
-    })();
-  }, []);
-  
+  const [statusSelected, setStatusSelected] = useState<'open' | 'closed'>('open')
+  const [isLoading, setIsLoading] = useState(false)
+  const [isMylocation, setIsMyLocation] = useState<LocationProps | null>({
+    latitude: 49.2070497,
+    longitude: -123.0454389
+  });
+  const [user, setUser] = useState<FirebaseAuthTypes.User | null>()
 
   const navigation = useNavigation()
   const { colors } = useTheme()
 
-  function handleNewOrder(){
+
+
+  function handleNewOrder() {
     navigation.navigate('location')
   }
 
-  function handleLogin() {
+  function handleLogout() {
     auth()
-    .signOut()
-    .catch( error => {
-      console.log(error);
-      return Alert.alert
-    })
+      .signOut()
+      .catch(error => {
+        console.log(error);
+        return Alert.alert('Log out', 'Try again later')
+      })
   }
+
+  
+
+  function updateLocation(lat: number, lng: Number) {
+      firestore()
+      .collection("users-gps")
+      .doc(user?.uid)
+      .set({
+        id: user?.uid,
+        email: user?.email,
+        layerStyle: {
+          id: user?.uid,
+          type: 'circle',
+          paint: {
+            circleRadius: 10, 
+            circleColor: '#007cbf'
+          },
+        },
+        geojson: {
+          type: 'FeatureCollection',
+          features: [
+            {
+              type: 'Feature',
+              geometry: {
+                type: 'Point',
+                coordinates: [lng, lat]
+              }
+            }
+          ]
+        },
+        status: 'open', 
+        created_at: firestore.FieldValue.serverTimestamp()
+      });
+  }
+
+
+
+  useEffect(() => {
+    (async () => {
+
+      const subscriber = auth()
+        .onAuthStateChanged(response => {
+          setUser(response)
+          setIsLoading(false)
+        })
+
+        
+    const { status } = await Location.requestForegroundPermissionsAsync();
+    if (status === 'granted') {
+      const { status } = await Location.getBackgroundPermissionsAsync();
+      if (status !== 'granted') {
+        return Alert.alert('Permission to access location was denied');
+      }
+    } else {
+      return alert('Need Permission to access')
+    }
+  
+
+      const { coords } = await Location.getCurrentPositionAsync({})
+      const { latitude, longitude } = coords
+      setIsMyLocation({latitude, longitude})
+
+      
+      await Location.watchPositionAsync({
+        accuracy: Location.Accuracy.High,
+        distanceInterval: 2,
+        timeInterval: 3000 
+      }, 
+      (loc) => { 
+        setIsMyLocation(loc.coords) 
+        console.log(loc.coords)
+      });
+      updateLocation(latitude, longitude)
+      
+
+      return subscriber
+      
+
+    })()
+  }, [isMylocation])
+
+
 
   return (
     <VStack flex={1} pb={6} bg="gray.700">
@@ -72,8 +137,9 @@ export function Home() {
       >
         <Logo />
 
-        <IconButton 
-          icon={<SignOut size={26} color={colors.gray[300]}/>}
+        <IconButton
+          icon={<SignOut size={26} color={colors.gray[300]} />}
+          onPress={handleLogout}
         />
       </HStack>
 
@@ -88,31 +154,37 @@ export function Home() {
         </HStack>
 
         <HStack space={3} mb={8}>
-        <Filter 
-          type="open"
-          title="Ongoing"
-          onPress={() => setStatusSelected('open')}
-          isActive={statusSelected === "open"}
-        />
+          <Filter
+            type="open"
+            title="Ongoing"
+            onPress={() => setStatusSelected('open')}
+            isActive={statusSelected === "open"}
+          />
 
-        <Filter 
-          type="closed"
-          title="Finished "
-          onPress={() => setStatusSelected('closed')}
-          isActive={statusSelected === "closed"}
-        />
-      </HStack> 
+          <Filter
+            type="closed"
+            title="Finished "
+            onPress={() => setStatusSelected('closed')}
+            isActive={statusSelected === "closed"}
+          />
+        </HStack>
 
-        <MyLocation
-        flex={1}
-        id={isMylocation?.id} 
-        latitude={isMylocation?.latitude} 
-        longitude={isMylocation?.longitude} 
-        when={isMylocation?.when} 
-        status={isMylocation?.status}
-        />
 
-        <Button title="Location" onPress={handleNewOrder}/>
+        {isLoading ?
+          <Loading />
+          :
+          <MyLocation
+            flex={1}
+            id={isMylocation?.id}
+            latitude={isMylocation?.latitude}
+            longitude={isMylocation?.longitude}
+            when={isMylocation?.when}
+            status={isMylocation?.status}
+          />
+        }
+
+
+        <Button title="Location" onPress={handleNewOrder} />
       </VStack>
 
 

@@ -1,11 +1,6 @@
 import { Boards } from "./Boards";
 
 
-
-
-
-
-
 export function LeftSideBar() {
 
 

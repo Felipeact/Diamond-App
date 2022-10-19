@@ -7,7 +7,7 @@ export type LocationProps = IPressableProps &{
   id?: string,
   latitude?: number;
   longitude?: number;
-  when?: string,
+  when?: string| any,
   status?: 'open' | 'closed'
 }
 
