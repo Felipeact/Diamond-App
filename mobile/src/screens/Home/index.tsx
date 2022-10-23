@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { Alert } from 'react-native';
-import { useNavigation } from '@react-navigation/native'
 import { HStack, IconButton, VStack, useTheme, Text, Heading, FlatList, Center } from 'native-base';
 import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth'
 import firestore from '@react-native-firebase/firestore';
@@ -11,7 +10,6 @@ import Logo from "../../assets/logo_secondary.svg";
 import { SignOut } from 'phosphor-react-native';
 import { Filter } from '../../components/Filter';
 import { MyLocation, LocationProps } from '../../components/MyLocation';
-import { Button } from '../../components/Button';
 import { dateFormat } from '../../utils/firestoreDateFormat';
 import { Loading } from '../../components/Loading';
 
@@ -19,23 +17,20 @@ export function Home() {
   const [statusSelected, setStatusSelected] = useState<'open' | 'closed'>('open')
   const [isLoading, setIsLoading] = useState(false)
   const [isMylocation, setIsMyLocation] = useState<LocationProps | null>({
-    latitude: 49.2070497,
-    longitude: -123.0454389
+    latitude: 0,
+    longitude: 0
   });
   const [user, setUser] = useState<FirebaseAuthTypes.User | null>()
 
-  const navigation = useNavigation()
   const { colors } = useTheme()
 
 
-
-  function handleNewOrder() {
-    navigation.navigate('location')
-  }
-
-  function handleLogout() {
-    auth()
+  async function handleLogout() {
+    await auth()
       .signOut()
+      .then( async () => {
+        await updateLocation(0, 0, 'false')
+      })
       .catch(error => {
         console.log(error);
         return Alert.alert('Log out', 'Try again later')
@@ -44,8 +39,8 @@ export function Home() {
 
   
 
-  function updateLocation(lat: number, lng: Number) {
-      firestore()
+  async function updateLocation(lat: any, lng: any, status: string) {
+     await  firestore()
       .collection("users-gps")
       .doc(user?.uid)
       .set({
@@ -71,7 +66,7 @@ export function Home() {
             }
           ]
         },
-        status: 'open', 
+        status: status, 
         created_at: firestore.FieldValue.serverTimestamp()
       });
   }
@@ -81,7 +76,7 @@ export function Home() {
   useEffect(() => {
     (async () => {
 
-      const subscriber = auth()
+      const subscriber = await auth()
         .onAuthStateChanged(response => {
           setUser(response)
           setIsLoading(false)
@@ -99,28 +94,31 @@ export function Home() {
     }
   
 
-      const { coords } = await Location.getCurrentPositionAsync({})
-      const { latitude, longitude } = coords
-      setIsMyLocation({latitude, longitude})
+      const { coords } = await Location.getCurrentPositionAsync()
+      if ( coords || user ) {
+        await Location.watchPositionAsync({
+          accuracy: Location.Accuracy.High,
+          distanceInterval: 2,
+          timeInterval: 3000 
+        }, 
+        async (loc) => { 
+          const openStatus = 'open'
+          setIsMyLocation(loc.coords) 
+          await updateLocation(loc.coords.latitude, loc.coords.longitude, openStatus)
+          console.log(loc.coords)
+        });
+      } else {
+        await updateLocation(0, 0, 'false')
+      }
 
       
-      await Location.watchPositionAsync({
-        accuracy: Location.Accuracy.High,
-        distanceInterval: 2,
-        timeInterval: 3000 
-      }, 
-      (loc) => { 
-        setIsMyLocation(loc.coords) 
-        console.log(loc.coords)
-      });
-      updateLocation(latitude, longitude)
       
+    return subscriber   
 
-      return subscriber
       
 
     })()
-  }, [isMylocation])
+  }, [])
 
 
 
@@ -178,13 +176,13 @@ export function Home() {
             id={isMylocation?.id}
             latitude={isMylocation?.latitude}
             longitude={isMylocation?.longitude}
-            when={isMylocation?.when}
+            when={dateFormat(isMylocation?.when)}
             status={isMylocation?.status}
           />
         }
 
 
-        <Button title="Location" onPress={handleNewOrder} />
+        {/* <Button title="Location" /> */}
       </VStack>
 
 

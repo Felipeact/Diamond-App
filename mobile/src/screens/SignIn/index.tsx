@@ -9,7 +9,6 @@ import { Envelope, Key } from 'phosphor-react-native';
 import Logo from '../../assets/logo_primary.svg'
 import { Button } from '../../components/Button';
 import { Alert } from 'react-native';
-import firestore from '@react-native-firebase/firestore';
 
 export function SignIn() {
   const [isLoading, setIsLoading] = useState(false)
@@ -18,7 +17,7 @@ export function SignIn() {
 
   const { colors } = useTheme()
 
-  async function handleSignIn() {
+  function handleSignIn() {
 
     if (!email || !password) {
       return Alert.alert('Danger', 'fill it up email and password')

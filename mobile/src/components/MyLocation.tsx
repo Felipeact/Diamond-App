@@ -34,6 +34,10 @@ export function MyLocation({ id, latitude, longitude, when, status, ...rest }: L
         <VStack flex={1} my={5} ml={5}>
           <Text color="white" fontSize="md"
           >
+            { longitude }
+          </Text>
+          <Text color="white" fontSize="md"
+          >
             { latitude }
           </Text>
 

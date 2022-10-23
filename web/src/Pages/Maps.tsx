@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
-import Map, { Layer, Marker, NavigationControl, Popup, Source } from 'react-map-gl'
-import { collection, getDocs } from "firebase/firestore"
+import Map, { Layer, NavigationControl, Source, useMap } from 'react-map-gl'
+import { collection, getDocs, query, where } from "firebase/firestore"
 import { db } from '../services/firebase';
 
 const token = 'pk.eyJ1IjoiZmVsaXBlYWN0IiwiYSI6ImNrZzhzYnBwODBrY3cyeW8yc2d0aHh2NGoifQ.rAlvtsT_62ncvlPEaiLlIA'
@@ -35,18 +35,21 @@ interface UserData {
 
 export default function Maps() {
 
-  const [users, setUsers] = useState<any>([]) 
+  const [users, setUsers] = useState<any>([])
+
 
   useEffect(() => {
 
     (async () => {
 
       setInterval(async () => {
-        const querySnapshot = await getDocs(collection(db, "users-gps"))
-      const data = querySnapshot.docs.map(doc => {
-        const { id, email, layerStyle, geojson, status, created_at } = doc.data()
+        const q = query(collection(db, "users-gps"), where("status", "==", "open"));
+        const querySnapshot = await getDocs(q)
+        const data = querySnapshot.docs.map(doc => {
+          const { id, email, layerStyle, geojson, status, created_at } = doc.data()
 
-          return { 
+          console.log()
+          return {
             id,
             email,
             layerStyle: {
@@ -61,19 +64,20 @@ export default function Maps() {
             status,
             created_at
           }
-      })
+        })
 
-   
-      setUsers(data)
+        setUsers(data)
       }, 2000)
-      
+
 
 
     })()
   }, [])
 
+
   return (
     <Map
+      id="usersMap"
       initialViewState={{
         longitude: -122.6898,
         latitude: 49.1422,
@@ -87,8 +91,8 @@ export default function Maps() {
     >
 
       {users.map((user: UserData) => (
-        <Source key={user.id} id={user.layerStyle.id} type="geojson" data={user.geojson}>
-          <Layer {...user.layerStyle} />
+        <Source key={user.id} id={user.layerStyle.id} type="geojson" data={user.geojson} >
+            <Layer {...user.layerStyle} />
         </Source>
       ))}
 

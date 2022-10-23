@@ -7,17 +7,18 @@ function App() {
   return (
     <BrowserRouter>
 
-      <Routes>
-        <Route path="/" element={<Login />}/>
 
-        <Route element={<Layout />}>
-          <Route path="/home" element={<Maps />}/>
-        </Route>
-      
+        <Routes>
+          <Route path="/" element={<Login />} />
 
-        {/* <Route path="*" element={<NotFound/>}></Route> */}
+          <Route element={<Layout />}>
+            <Route path="/home" element={<Maps />} />
+          </Route>
 
-      </Routes>
+
+          {/* <Route path="*" element={<NotFound/>}></Route> */}
+
+        </Routes>
     </BrowserRouter>
   );
 }
