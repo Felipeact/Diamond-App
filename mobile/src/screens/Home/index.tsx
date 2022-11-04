@@ -4,6 +4,7 @@ import { HStack, IconButton, VStack, useTheme, Text, Heading, FlatList, Center }
 import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth'
 import firestore from '@react-native-firebase/firestore';
 import * as Location from 'expo-location';
+import * as TaskManager from 'expo-task-manager';
 
 
 import Logo from "../../assets/logo_secondary.svg";
@@ -82,36 +83,26 @@ export function Home() {
           setIsLoading(false)
         })
 
-        
+    const LOCATION_TASK_NAME = 'background-location-task';
     const { status } = await Location.requestForegroundPermissionsAsync();
-    if (status === 'granted') {
-      const { status } = await Location.getBackgroundPermissionsAsync();
-      if (status !== 'granted') {
-        return Alert.alert('Permission to access location was denied');
-      }
-    } else {
-      return alert('Need Permission to access')
-    }
-  
-
-      const { coords } = await Location.getCurrentPositionAsync()
-      if ( coords || user ) {
-        await Location.watchPositionAsync({
-          accuracy: Location.Accuracy.High,
-          distanceInterval: 2,
-          timeInterval: 3000 
-        }, 
-        async (loc) => { 
-          const openStatus = 'open'
-          setIsMyLocation(loc.coords) 
-          await updateLocation(loc.coords.latitude, loc.coords.longitude, openStatus)
-          console.log(loc.coords)
+      if (status === 'granted') {
+        await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
+          accuracy: Location.Accuracy.Balanced,
         });
-      } else {
-        await updateLocation(0, 0, 'false')
       }
 
-      
+      TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }: any) => {
+        if (error) {
+          return;
+        }
+        if (data) {
+          const { locations } = data;
+          const openStatus = 'open'
+          setIsMyLocation(locations) 
+          await updateLocation(locations.latitude, locations.longitude, openStatus)
+          console.log(locations)
+        }
+      });
       
     return subscriber   
 
@@ -189,3 +180,4 @@ export function Home() {
     </VStack>
   );
 }
+

@@ -8,7 +8,7 @@
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/splash.png",
-      "resizeMode": "contain",
+      "resizeMode": "cover",
       "backgroundColor": "#121214"
     },
     "updates": {
@@ -24,10 +24,18 @@
       "supportsTablet": true,
       "googleServicesFile": "./GoogleService-info.plist",
       "bundleIdentifier": "com.diamondApp",
-      "buildNumber": "1.0.0"
+      "buildNumber": "1.0.0",
+      "infoPlist": {
+        "UIBackgroundModes": [
+          "location",
+          "fetch"
+        ]
+      }
     },
     "android": {
-      "permissions": ["ACCESS_BACKGROUND_LOCATION"],
+      "permissions": [
+        "ACCESS_BACKGROUND_LOCATION"
+      ],
       "versionCode": 1,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
@@ -35,6 +43,11 @@
       },
       "googleServicesFile": "./google-services.json",
       "package": "com.diamondApp"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "96f87112-d7b7-4653-ba92-a2212ed665c4"
+      }
     }
   }
 }
